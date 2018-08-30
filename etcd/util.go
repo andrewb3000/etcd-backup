@@ -58,15 +58,23 @@ func execCmd(cmd string, args []string, envs []string, logger micrologger.Logger
 // - fpath - full path to target file
 // - p     - paramsAWS struct with AWS keys and bucket name
 func uploadToS3(fpath string, p config.AWSConfig, logger micrologger.Logger) error {
+	var svc *s3.S3
 	// Login to AWS S3
-	creds := credentials.NewStaticCredentials(p.AccessKey, p.SecretKey, "")
-	_, err := creds.Get()
-	if err != nil {
-		return microerror.Mask(err)
+	if p.AccessKey != "" && p.SecretKey != "" {
+		creds := credentials.NewStaticCredentials(p.AccessKey, p.SecretKey, "")
+		_, err := creds.Get()
+		if err != nil {
+			return microerror.Mask(err)
+		}
+		cfg := aws.NewConfig().WithRegion(p.Region).WithCredentials(creds)
+		svc = s3.New(session.New(), cfg)
+	} else {
+		sess, err := session.NewSession()
+		if err != nil {
+			return microerror.Mask(err)
+		}
+		svc = s3.New(sess)
 	}
-	cfg := aws.NewConfig().WithRegion(p.Region).WithCredentials(creds)
-	svc := s3.New(session.New(), cfg)
-
 	// Upload.
 	file, err := os.Open(fpath)
 	if err != nil {

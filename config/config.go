@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/giantswarm/microerror"
 	"log"
 	"os"
+
+	"github.com/giantswarm/microerror"
 )
 
 const (
@@ -52,12 +53,6 @@ func CheckConfig(f Flags) error {
 	// Prefix is required.
 	if f.Prefix == "" {
 		log.Fatalf("-prefix required")
-		return microerror.Mask(invalidConfigError)
-	}
-
-	// AWS is requirement.
-	if f.AwsAccessKey == "" || f.AwsSecretKey == "" {
-		log.Fatalf("No environment variables %s and %s provided", EnvAwsAccessKey, EnvAwsSecretKey)
 		return microerror.Mask(invalidConfigError)
 	}
 
