@@ -69,10 +69,8 @@ func uploadToS3(fpath string, p config.AWSConfig, logger micrologger.Logger) err
 		cfg := aws.NewConfig().WithRegion(p.Region).WithCredentials(creds)
 		svc = s3.New(session.New(), cfg)
 	} else {
-		sess, err := session.NewSession()
-		if err != nil {
-			return microerror.Mask(err)
-		}
+  	logger.Log("level", "info", "msg", fmt.Sprintf("No environment variables provided for AWS creds - using EC2 instance role"))
+		sess := session.Must(session.NewSession())
 		svc = s3.New(sess)
 	}
 	// Upload.
@@ -103,6 +101,7 @@ func uploadToS3(fpath string, p config.AWSConfig, logger micrologger.Logger) err
 	// Put object to S3.
 	_, err = svc.PutObject(params)
 	if err != nil {
+  	logger.Log("level", "error", "msg", fmt.Sprintf("AWS S3: Error putting file - %s", err))
 		return microerror.Mask(err)
 	}
 
