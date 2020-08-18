@@ -12,6 +12,7 @@ Create etcd V2 and V3 backup and upload to S3.
 
 ```
 docker run --rm \
+    -e AWS_REGION=REGION \
     -e ETCDBACKUP_AWS_ACCESS_KEY=XXX \
     -e ETCDBACKUP_AWS_SECRET_KEY=YYY \
     -e ETCDBACKUP_PASSPHRASE=ZZZ \
@@ -41,6 +42,21 @@ CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' .
 
 ```
 etcd-backup -help
+```
+
+Arguments:
+```
+	aws-s3-bucket - AWS S3 bucket for backups (default: etcdbackups)
+	aws-s3-region - AWS S3 region for backups (default: us-east-1)
+	guest-backup - Enable guest clusters etcd backup (default: false)
+	etcd-v2-datadir - Etcd datadir. If not set V2 etcd will be skipped (default: "")
+	etcd-v3-cert - Client certificate for etcd connection (default: "")
+	etcd-v3-cacert - Client CA certificate for etcd connection (default: "")
+	etcd-v3-key - Client private key for etcd connection (default: "")
+	etcd-v3-endpoints - Endpoints for etcd connection (default: http://127.0.0.1:2379)
+	prefix - [mandatory] Prefix to use in etcd filenames (default: "")
+	provider - [mandatory] provider (aws, azure or kvm) (default: "")
+	skip-v2 - flag for skipping etcd v2 backup (default: false)
 ```
 
 ### Create V3 backup
